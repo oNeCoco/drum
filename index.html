@@ -1093,8 +1093,10 @@ function updatePositions(){
     ctx.fillRect(0,0,w,h);
 
     // Rotate 90° clockwise for sideways TV
-    ctx.save();
-const rw = w, rh = h;
+ ctx.save();
+ctx.translate(w, 0);
+ctx.rotate(Math.PI / 2);
+const rw = h, rh = w;
 
     ctx.textAlign="center";
     ctx.textBaseline="middle";
