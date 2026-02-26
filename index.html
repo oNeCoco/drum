@@ -759,6 +759,7 @@ localStorage.setItem(LS.MUSIC, DEFAULT_MUSIC_URL);
 
   // ---------- GAME LOGIC ----------
   const GAME_SECS=30,BASE_VX=420,HIT_ICON_SZ=330,HIT_RADIUS=185,HIT_WINDOW=180,LANE_GAP=140,MIN_NOTE_GAP=130,SPAWN_MARGIN=80;
+  const MOUTH_X = 340; 
   const items=[],pops=[];
   let running=false,score=0,timeLeft=0,last=0,nextBeatIn=0,bonusMode=false,drumFlash=0;
   let hitX=0,hitY=0,laneY1=0,laneY2=0;
@@ -797,7 +798,7 @@ let endInputLocked = false; // lock input during TIME OUT countdown
       if(!it.alive)continue;
       if(Math.abs(it.y-laneY)<5&&it.x>rm)rm=it.x;
     }
-    const idealX=sw+SPAWN_MARGIN+half;
+    const idealX = (sw - MOUTH_X) + half;
     const minX=rm===-Infinity?idealX:rm+half+size+MIN_NOTE_GAP;
     items.push({type,x:Math.max(idealX,minX),y:laneY,size,alive:true});
   }
