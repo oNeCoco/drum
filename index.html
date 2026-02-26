@@ -1110,12 +1110,13 @@ function updatePositions(){
     const gap   = dotR * 3.2;
     const totalDotW = (need - 1) * gap;
 
-for(let i=0;i<need;i++){
-  const DOT_CENTER_X = rw * 0.18;
-  const DOT_CENTER_Y = rh * 0.42;
+const DOT_CENTER_X = rw * 0.07;   // left pole
+const DOT_CENTER_Y = rh * 0.45;   // middle of pole
 
-  const dx = DOT_CENTER_X - totalDotW/2 + i*gap;
-  const dy = DOT_CENTER_Y;
+for(let i=0;i<need;i++){
+
+  const dx = DOT_CENTER_X;
+  const dy = DOT_CENTER_Y - totalDotW/2 + i*gap;
 
   ctx.beginPath();
   ctx.arc(dx, dy, dotR, 0, Math.PI*2);
