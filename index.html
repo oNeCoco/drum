@@ -219,18 +219,19 @@
   'use strict';
 
 // ---------- DEFAULTS (files must be beside drum.html) ----------
-const DEFAULT_READY_BG_URL = "1.gif";
-const DEFAULT_GAME_BG_URL  = "2.gif";
-const DEFAULT_END_BG_URL   = "3.svg";
+const ASSET_VER = "v7"; // change this anytime you update logos
+  
+const DEFAULT_LOGO1_URL = "logo1.jpeg?" + ASSET_VER;
+const DEFAULT_LOGO2_URL = "logo2.jpeg?" + ASSET_VER;
+const DEFAULT_LOGO3_URL = "logo3.jpeg?" + ASSET_VER;
+const DEFAULT_BOOM_URL  = "boom.jpeg?"  + ASSET_VER;
 
-const DEFAULT_LOGO1_URL = "logo1.jpeg";
-const DEFAULT_LOGO2_URL = "logo2.jpeg";
-const DEFAULT_LOGO3_URL = "logo3.jpeg";
-const DEFAULT_BOOM_URL  = "boom.jpeg";
-const DEFAULT_HIT_ICON_URL = ""; // if you don't have drum.png yet, temporarily use "logo3.jpeg"
+const DEFAULT_READY_BG_URL = "1.gif?" + ASSET_VER;
+const DEFAULT_GAME_BG_URL  = "2.gif?" + ASSET_VER;
+const DEFAULT_END_BG_URL   = "3.svg?" + ASSET_VER;
 
-const DEFAULT_MUSIC_URL    = "bgmusic.mp3";
-const DEFAULT_DRUM_SFX_URL = "soundeffect.mp3";
+const DEFAULT_MUSIC_URL    = "bgmusic.mp3?" + ASSET_VER;
+const DEFAULT_DRUM_SFX_URL = "soundeffect.mp3?" + ASSET_VER;
 
 // ---------- PRELOAD DEFAULT BACKGROUNDS (reduce first-time delay) ----------
 const _preloadBg = (() => {
