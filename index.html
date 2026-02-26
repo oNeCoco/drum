@@ -220,13 +220,20 @@
 
 // ---------- DEFAULTS (files must be beside drum.html) ----------
 // --------- CACHE VERSION ---------
-const ASSET_VER = "v1"; // change to v2, v3 when you update
+const ASSET_VER = "v2"; // change to v2, v3 when you update
 
 // Only cache-bust on http/https (Vercel). Keep clean filenames on file://
 const withVer = (p) => {
   const isWeb = location.protocol === "http:" || location.protocol === "https:";
   return isWeb ? `${p}?${ASSET_VER}` : p;
 };
+
+  // ✅ Auto-clear old saved image overrides when ASSET_VER changes
+const LS_VER_KEY = "cg_asset_version";
+if (localStorage.getItem(LS_VER_KEY) !== ASSET_VER) {
+  ["cg_logo1","cg_logo2","cg_logo3","cg_boom","cg_hit"].forEach(k => localStorage.removeItem(k));
+  localStorage.setItem(LS_VER_KEY, ASSET_VER);
+}
 
 // --------- DEFAULTS (files must be beside drum.html) ---------
 const DEFAULT_READY_BG_URL = withVer("1.gif");
