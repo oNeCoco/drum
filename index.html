@@ -1110,17 +1110,21 @@ function updatePositions(){
     const gap   = dotR * 3.2;
     const totalDotW = (need - 1) * gap;
 
-    for(let i=0;i<need;i++){
-      const dx = rw/2 - totalDotW/2 - 120 + i*gap;
-      const dy = rh * 0.68;
-      ctx.beginPath();
-      ctx.arc(dx, dy, dotR, 0, Math.PI*2);
-      ctx.fillStyle = i < readyHitCount ? "#ffd54a" : "rgba(255,255,255,0.20)";
-      ctx.fill();
-      ctx.strokeStyle = i < readyHitCount ? "#ffd54a" : "rgba(255,255,255,0.45)";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
+for(let i=0;i<need;i++){
+  const DOT_CENTER_X = rw * 0.18;
+  const DOT_CENTER_Y = rh * 0.42;
+
+  const dx = DOT_CENTER_X - totalDotW/2 + i*gap;
+  const dy = DOT_CENTER_Y;
+
+  ctx.beginPath();
+  ctx.arc(dx, dy, dotR, 0, Math.PI*2);
+  ctx.fillStyle = i < readyHitCount ? "#ffd54a" : "rgba(255,255,255,0.20)";
+  ctx.fill();
+  ctx.strokeStyle = i < readyHitCount ? "#ffd54a" : "rgba(255,255,255,0.45)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
 
     ctx.fillStyle="rgba(255,255,255,0.55)";
     ctx.font="600 " + Math.floor(rw*0.030) + "px system-ui";
