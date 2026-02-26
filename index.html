@@ -921,15 +921,24 @@ let endInputLocked = false; // lock input during TIME OUT countdown
   }
 
   function drawLanes(w){
-    ctx.globalAlpha=0.18;
-    ctx.strokeStyle="#ffd54a";
-    ctx.lineWidth=4;
-    ctx.beginPath();
-    ctx.moveTo(0,laneY1);ctx.lineTo(w,laneY1);
-    ctx.moveTo(0,laneY2);ctx.lineTo(w,laneY2);
-    ctx.stroke();
-    ctx.globalAlpha=1;
-  }
+  ctx.globalAlpha = 0.18;
+  ctx.strokeStyle = "#ffd54a";
+  ctx.lineWidth = 4;
+
+  // ✅ Start from lion mouth (right) -> stop at drum (left)
+  const startX = w - 260;   // lion mouth area (tune this)
+  const endX   = hitX + 80; // stop near drum (tune this)
+
+  ctx.beginPath();
+  ctx.moveTo(startX, laneY1);
+  ctx.lineTo(endX, laneY1);
+
+  ctx.moveTo(startX, laneY2);
+  ctx.lineTo(endX, laneY2);
+
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+}
 
   function drawNote(it){
     ctx.save();
