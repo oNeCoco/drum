@@ -219,8 +219,8 @@
   'use strict';
 
 // ---------- DEFAULTS (files must be beside drum.html) ----------
-const DEFAULT_READY_BG_URL = "1.svg";
-const DEFAULT_GAME_BG_URL  = "2.svg";
+const DEFAULT_READY_BG_URL = "1.gif";
+const DEFAULT_GAME_BG_URL  = "2.gif";
 const DEFAULT_END_BG_URL   = "3.svg";
 
 const DEFAULT_LOGO1_URL = "logo1.jpeg";
@@ -232,11 +232,24 @@ const DEFAULT_HIT_ICON_URL = "logo3.jpeg"; // if you don't have drum.png yet, te
 const DEFAULT_MUSIC_URL    = "bgmusic.mp3";
 const DEFAULT_DRUM_SFX_URL = "soundeffect.mp3";
 
+// ---------- PRELOAD DEFAULT BACKGROUNDS (reduce first-time delay) ----------
+const _preloadBg = (() => {
+  const a = new Image(); a.src = DEFAULT_READY_BG_URL;
+  const b = new Image(); b.src = DEFAULT_GAME_BG_URL;
+  const c = new Image(); c.src = DEFAULT_END_BG_URL;
+  return { a,b,c };
+})();
+
+
   // ---------- ELEMENTS ----------
   const frame    = document.getElementById("frame");
   const bgLayer  = document.getElementById("bgLayer");
   const bgImgEl  = document.getElementById("bgImg");
-  const bgTint   = document.getElementById("bgTint");
+  
+
+  // Start loading the first wallpaper immediately (no delay on first screen)
+  setBg(DEFAULT_READY_BG_URL);
+const bgTint   = document.getElementById("bgTint");
   const canvas   = document.getElementById("c");
   const ctx      = canvas.getContext("2d");
   const scoreEl  = document.getElementById("score");
@@ -451,7 +464,7 @@ function setBg(src){
   })();
 
   // ---------- POINTS ----------
-  let pts={ logo1:1, logo2:2, logo3:3, boom:-5 };
+  let pts={ logo1:2, logo2:4, logo3:6, boom:-2 };
   try{ const s=localStorage.getItem(LS.PTS); if(s) pts=JSON.parse(s); }catch(e){}
   const ptsEl={ logo1:document.getElementById("logo1pts"), logo2:document.getElementById("logo2pts"), logo3:document.getElementById("logo3pts"), boom:document.getElementById("boompts") };
   ptsEl.logo1.value=pts.logo1; ptsEl.logo2.value=pts.logo2; ptsEl.logo3.value=pts.logo3; ptsEl.boom.value=pts.boom;
@@ -1032,7 +1045,7 @@ function updatePositions(){
     running=false;
     isEndScreen=false;
 
-    await loadStageBg("ready");
+    setBg(DEFAULT_READY_BG_URL);
     bgMusicEl.pause();
 
     overlay.classList.add("hidden");
@@ -1272,7 +1285,7 @@ function updatePositions(){
     if(drumRestartCount >= drumRestartNeeded){
       isEndScreen=false;
       if(endScreenLoop) cancelAnimationFrame(endScreenLoop);
-      await showReadyScreen(); // go back to READY page (hit 3 times again)
+      showReadyScreen(); // go back to READY page (hit 3 times again)
     }
   }
 
@@ -1370,7 +1383,7 @@ function updatePositions(){
     if(musicGain) musicGain.gain.value=musicVol;
     await goFullscreen(); resize();
     hideMenu();
-    await showReadyScreen();
+    showReadyScreen();
   });
 
 })();
