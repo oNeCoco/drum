@@ -994,7 +994,7 @@ function updatePositions(){
     if(!bonusMode && timeLeft<=5){
       bonusMode=true;
       pops.push({x:hitX,y:hitY-220,txt:"BONUS RUSH!",t:1.0,col:"#ffd54a"});
-      bgTint.style.background="rgba(255,213,74,0.07)";
+      //bgTint.style.background="rgba(255,213,74,0.07)";
     }
 
     if(timeLeft<=0){ endGame(); return; }
@@ -1094,9 +1094,7 @@ function updatePositions(){
 
     // Rotate 90° clockwise for sideways TV
     ctx.save();
-    //ctx.translate(w, 0);
-    //ctx.rotate(Math.PI / 2);
-    const rw = h, rh = w;
+const rw = w, rh = h;
 
     ctx.textAlign="center";
     ctx.textBaseline="middle";
