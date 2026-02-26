@@ -1111,7 +1111,7 @@ function updatePositions(){
     const totalDotW = (need - 1) * gap;
 
     for(let i=0;i<need;i++){
-      const dx = rw/2 - totalDotW/2 + i*gap;
+      const dx = rw/2 - totalDotW/2 - 120 + i*gap;
       const dy = rh * 0.68;
       ctx.beginPath();
       ctx.arc(dx, dy, dotR, 0, Math.PI*2);
