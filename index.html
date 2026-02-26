@@ -389,13 +389,29 @@ function setBg(src){
         setBg(DEFAULT_READY_BG_URL);
         return;
       }
-      if(stage==="game"){
-        const blob = await idbGet(IDB_GAME_BG_KEY);
-        if(blob){ applyBgBlob("game", blob); updateBgStatus(bgStatusEl, blob.size); return; }
-        updateBgStatus(bgStatusEl, 0);
-        setBg(DEFAULT_GAME_BG_URL);
-        return;
-      }
+     if(stage==="game"){
+  const blob = await idbGet(IDB_GAME_BG_KEY);
+
+  // Always set default immediately (so no delay)
+  setBg(DEFAULT_GAME_BG_URL);
+
+  // If user has uploaded bg before, try it, but if it fails, keep default
+  if(blob){
+    applyBgBlob("game", blob);
+    updateBgStatus(bgStatusEl, blob.size);
+
+    bgImgEl.onerror = async () => {
+      // fallback to default if saved blob is broken
+      setBg(DEFAULT_GAME_BG_URL);
+      try{ await idbDel(IDB_GAME_BG_KEY); }catch(e){}
+      updateBgStatus(bgStatusEl, 0);
+    };
+    return;
+  }
+
+  updateBgStatus(bgStatusEl, 0);
+  return;
+}
       if(stage==="end"){
         const blob = await idbGet(IDB_END_BG_KEY);
         if(blob){ applyBgBlob("end", blob); updateBgStatus(endBgStatusEl, blob.size); return; }
