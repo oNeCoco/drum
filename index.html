@@ -74,7 +74,7 @@
       <!-- SPEED -->
       <div class="settingRow">
         <div class="rowLabel">Speed (Hardness) <span id="speedLabel">1.0x</span></div>
-        <input id="speed" type="range" min="0.7" max="6.0" step="0.1" value="1.5" />
+        <input id="speed" type="range" min="0.7" max="6.0" step="0.1" value="1.0" />
         <p style="margin:5px 0 0;font-size:12px;opacity:.8;">Higher = faster notes &amp; beats.</p>
       </div>
 
@@ -279,10 +279,14 @@ const bgTint   = document.getElementById("bgTint");
   // Speed
   const speedSlider=document.getElementById("speed");
   const speedLabel =document.getElementById("speedLabel");
-  let speedMul=1.5;
-  speedSlider.addEventListener("input",()=>{ speedMul=Number(speedSlider.value); speedLabel.textContent=speedMul.toFixed(1)+"x"; });
-
-  // LS keys
+  // ✅ default speed comes from the slider value (e.g. 1.5)
+  let speedMul = Number(speedSlider.value);
+  speedLabel.textContent = speedMul.toFixed(1) + "x";
+  speedSlider.addEventListener("input",()=>{
+    speedMul = Number(speedSlider.value);
+    speedLabel.textContent = speedMul.toFixed(1) + "x";
+  });
+// LS keys
   const LS={
     LOGO1:"cg_logo1",LOGO2:"cg_logo2",LOGO3:"cg_logo3",BOOM:"cg_boom",HIT:"cg_hit",
     MUSIC:"cg_music",DRUM_SFX:"cg_drum_sfx",PTS:"cg_points",
@@ -389,29 +393,13 @@ function setBg(src){
         setBg(DEFAULT_READY_BG_URL);
         return;
       }
-     if(stage==="game"){
-  const blob = await idbGet(IDB_GAME_BG_KEY);
-
-  // Always set default immediately (so no delay)
-  setBg(DEFAULT_GAME_BG_URL);
-
-  // If user has uploaded bg before, try it, but if it fails, keep default
-  if(blob){
-    applyBgBlob("game", blob);
-    updateBgStatus(bgStatusEl, blob.size);
-
-    bgImgEl.onerror = async () => {
-      // fallback to default if saved blob is broken
-      setBg(DEFAULT_GAME_BG_URL);
-      try{ await idbDel(IDB_GAME_BG_KEY); }catch(e){}
-      updateBgStatus(bgStatusEl, 0);
-    };
-    return;
-  }
-
-  updateBgStatus(bgStatusEl, 0);
-  return;
-}
+      if(stage==="game"){
+        const blob = await idbGet(IDB_GAME_BG_KEY);
+        if(blob){ applyBgBlob("game", blob); updateBgStatus(bgStatusEl, blob.size); return; }
+        updateBgStatus(bgStatusEl, 0);
+        setBg(DEFAULT_GAME_BG_URL);
+        return;
+      }
       if(stage==="end"){
         const blob = await idbGet(IDB_END_BG_KEY);
         if(blob){ applyBgBlob("end", blob); updateBgStatus(endBgStatusEl, blob.size); return; }
@@ -1038,6 +1026,8 @@ function updatePositions(){
   }
 
   async function startGame(){
+    // Instant default background (prevents any flash/delay)
+    setBg(DEFAULT_GAME_BG_URL);
     await loadStageBg("game");
     resetGame();
     running=true;
@@ -1151,6 +1141,8 @@ function updatePositions(){
   // ---------- END SCREEN (SCORE + HIT 3 TO PLAY AGAIN) ----------
   function endGame(){
     running=false;
+    // Instant default background (prevents any flash/delay)
+    setBg(DEFAULT_END_BG_URL);
     isEndScreen=true;
     isReadyScreen=false;
     drumRestartCount=0;
