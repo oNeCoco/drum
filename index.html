@@ -279,7 +279,7 @@ const bgTint   = document.getElementById("bgTint");
   // Speed
   const speedSlider=document.getElementById("speed");
   const speedLabel =document.getElementById("speedLabel");
-  let speedMul=1.0;
+  let speedMul=1.5;
   speedSlider.addEventListener("input",()=>{ speedMul=Number(speedSlider.value); speedLabel.textContent=speedMul.toFixed(1)+"x"; });
 
   // LS keys
