@@ -220,7 +220,7 @@
 
 // ---------- DEFAULTS (files must be beside drum.html) ----------
 // --------- CACHE VERSION ---------
-const ASSET_VER = "v2"; // change to v2, v3 when you update
+const ASSET_VER = "v3"; // change to v2, v3 when you update
 
 // Only cache-bust on http/https (Vercel). Keep clean filenames on file://
 const withVer = (p) => {
@@ -228,12 +228,6 @@ const withVer = (p) => {
   return isWeb ? `${p}?${ASSET_VER}` : p;
 };
 
-  // ✅ Auto-clear old saved image overrides when ASSET_VER changes
-const LS_VER_KEY = "cg_asset_version";
-if (localStorage.getItem(LS_VER_KEY) !== ASSET_VER) {
-  ["cg_logo1","cg_logo2","cg_logo3","cg_boom","cg_hit"].forEach(k => localStorage.removeItem(k));
-  localStorage.setItem(LS_VER_KEY, ASSET_VER);
-}
 
 // --------- DEFAULTS (files must be beside drum.html) ---------
 const DEFAULT_READY_BG_URL = withVer("1.gif");
@@ -348,6 +342,29 @@ speedSlider.addEventListener("input", () => {
     }));
   }
 
+  const LS_VER_KEY = "cg_asset_version";
+
+function isUserUpload(v){
+  return typeof v === "string" && v.startsWith("data:");
+}
+
+function clearOnlyDefaults(){
+  const keys = ["cg_logo1","cg_logo2","cg_logo3","cg_boom","cg_hit","cg_music","cg_drum_sfx"];
+  for(const k of keys){
+    const v = localStorage.getItem(k);
+    // remove only if it's NOT a user upload
+    if(v && !isUserUpload(v)) localStorage.removeItem(k);
+  }
+  // points are numbers, if you want new default scoring then clear points:
+  localStorage.removeItem("cg_points");
+}
+
+const prev = localStorage.getItem(LS_VER_KEY);
+if(prev !== ASSET_VER){
+  clearOnlyDefaults();
+  localStorage.setItem(LS_VER_KEY, ASSET_VER);
+}
+  
   function readFile(f){
     return new Promise((res,rej)=>{
       const fr=new FileReader();
@@ -488,7 +505,7 @@ function setBg(src){
   })();
 
   // ---------- POINTS ----------
-  let pts={ logo1:2, logo2:4, logo3:6, boom:-2 };
+  let pts={ logo1:6, logo2:2, logo3:4, boom:-2 };
   try{ const s=localStorage.getItem(LS.PTS); if(s) pts=JSON.parse(s); }catch(e){}
   const ptsEl={ logo1:document.getElementById("logo1pts"), logo2:document.getElementById("logo2pts"), logo3:document.getElementById("logo3pts"), boom:document.getElementById("boompts") };
   ptsEl.logo1.value=pts.logo1; ptsEl.logo2.value=pts.logo2; ptsEl.logo3.value=pts.logo3; ptsEl.boom.value=pts.boom;
