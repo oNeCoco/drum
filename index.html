@@ -220,7 +220,7 @@
 
 // ---------- DEFAULTS (files must be beside drum.html) ----------
 // --------- CACHE VERSION ---------
-const ASSET_VER = "v4"; // change to v2, v3 when you update
+const ASSET_VER = "v10"; // change to v2, v3 when you update
 
 // Only cache-bust on http/https (Vercel). Keep clean filenames on file://
 const withVer = (p) => {
@@ -312,11 +312,14 @@ speedSlider.addEventListener("input", () => {
   const IDB_READY_BG_KEY = "bg_ready_blob";
   const IDB_END_BG_KEY   = "bg_end_blob";
 
+  // Cache the IDB connection to avoid opening a new one every round (causes stall after ~20 rounds)
+  let _idbConn = null;
   function openIDB(){
+    if(_idbConn) return Promise.resolve(_idbConn);
     return new Promise((res,rej)=>{
       const req = indexedDB.open(IDB_NAME, 1);
       req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
-      req.onsuccess = e => res(e.target.result);
+      req.onsuccess = e => { _idbConn = e.target.result; res(_idbConn); };
       req.onerror   = e => rej(e.target.error);
     });
   }
@@ -1045,6 +1048,15 @@ function updatePositions(){
     for(const p of pops){ p.t-=dt; p.y-=30*dt; }
     if(drumFlash>0) drumFlash-=dt;
 
+    // cleanup to prevent memory growth (keeps performance stable after many rounds)
+    for (let i = items.length - 1; i >= 0; i--) {
+      if (!items[i].alive) items.splice(i, 1);
+    }
+    for (let i = pops.length - 1; i >= 0; i--) {
+      if (pops[i].t <= 0) pops.splice(i, 1);
+    }
+
+
     ctx.clearRect(0,0,w,h);
     drawLanes(w);
     drawHitDrum();
@@ -1075,6 +1087,12 @@ function updatePositions(){
   }
 
   async function startGame(){
+    // Safety: ensure only ONE animation loop is running
+    if (readyLoop) cancelAnimationFrame(readyLoop);
+    if (endScreenLoop) cancelAnimationFrame(endScreenLoop);
+    readyLoop = null;
+    endScreenLoop = null;
+
     // Instant default background (prevents any flash/delay)
     setBg(DEFAULT_GAME_BG_URL);
     await loadStageBg("game");
@@ -1095,6 +1113,10 @@ function updatePositions(){
   let readyLoop = null;
 
   async function showReadyScreen(){
+    // Safety: stop end screen loop if it was still running
+    if (endScreenLoop) cancelAnimationFrame(endScreenLoop);
+    endScreenLoop = null;
+
     isReadyScreen=true;
     readyHitCount=0;
     running=false;
@@ -1195,6 +1217,10 @@ for (let i = 0; i < need; i++) {
 
   // ---------- END SCREEN (SCORE + HIT 3 TO PLAY AGAIN) ----------
   function endGame(){
+    // Safety: stop ready loop if it was still running
+    if (readyLoop) cancelAnimationFrame(readyLoop);
+    readyLoop = null;
+
     running=false;
     // Instant default background (prevents any flash/delay)
     setBg(DEFAULT_END_BG_URL);
@@ -1203,6 +1229,8 @@ for (let i = 0; i < need; i++) {
     drumRestartCount=0;
     endScreenStartTime=performance.now();
     bgMusicEl.pause();
+    // Safety: force-unlock input after the countdown even if the animation loop stalls
+    setTimeout(() => { endInputLocked = false; }, 2500);
 
     loadStageBg("end");
 
@@ -1415,7 +1443,7 @@ for (let i = 0; i < need; i++) {
       }
     }
   }
-  setInterval(pollGamepads, 8);
+  setInterval(pollGamepads, 16);
 
   // Keyboard
   document.addEventListener("keydown", e=>{
